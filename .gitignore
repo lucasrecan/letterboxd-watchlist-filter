@@ -7,4 +7,7 @@ watchlist_enriched.csv
 watchlist_filtered.csv
 watchlist.csv
 
+.~lock.watchlist_enriched.csv#
+.~lock.watchlist_filtered.csv#
+.~lock.watchlist.csv#
 service_account.json
