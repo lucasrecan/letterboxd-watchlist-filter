@@ -8,8 +8,18 @@ st.set_page_config(page_title="Letterboxd Watchlist Filter")
 uploaded_file = st.file_uploader("Upload your Letterboxd watchlist CSV", type="csv")
 
 filter_country = st.text_input("Country to filter", "United States of America")
-exclude_country = st.checkbox("Exclude films with this country?", True)
-only_this_country = st.checkbox("Only films exclusively in this country?", False)
+filter_mode = st.radio(
+    "Filter mode:",
+    ("Exclude films from this country", "Include films with this country")
+)
+if filter_mode == "Exclude films from this country":
+    exclude_country = True
+    only_this_country = False
+else:
+    exclude_country = False
+    only_this_country = st.checkbox(
+        "Only films exclusively in this country?", False
+    )
 
 if uploaded_file is not None and st.button("Generate CSV"):
     df_input = pd.read_csv(uploaded_file)
