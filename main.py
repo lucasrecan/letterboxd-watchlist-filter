@@ -15,12 +15,21 @@ TMDB_API_KEY = api_key.api_key
 # Input / output files
 INPUT_CSV = "watchlist.csv"               # Raw Letterboxd export
 ENRICHED_CSV = "watchlist_enriched.csv"  # Persistent enriched CSV to store all films and production countries
-OUTPUT_CSV = "watchlist_filtered.csv"    # Final view excluding US films
+OUTPUT_CSV = "watchlist_filtered.csv"    # Final filtered view
 
 TMDB_SEARCH_URL = "https://api.themoviedb.org/3/search/movie"
 TMDB_MOVIE_URL = "https://api.themoviedb.org/3/movie/{}"
 
 SLEEP_SECONDS = 0.05  # Small sleep to avoid micro-bursts and prevent throttling by TMDB
+
+# =========================
+# COUNTRY FILTER CONFIGURATION
+# =========================
+
+FILTER_COUNTRY = "France"  # Country to filter
+EXCLUDE_COUNTRY = False   # True -> remove films containing FILTER_COUNTRY
+                         # False -> keep only films containing FILTER_COUNTRY
+ONLY_THIS_COUNTRY = True # True -> keep only films exclusively produced in FILTER_COUNTRY (used only if EXCLUDE_COUNTRY=False)
 
 # =========================
 # LOAD CURRENT WATCHLIST
@@ -37,7 +46,8 @@ if Path(ENRICHED_CSV).exists():
     df_enriched = pd.read_csv(ENRICHED_CSV)
     df_enriched["Year"] = df_enriched["Year"].astype("Int64")
     
-    # Convert Production Countries back to lists if they were read as strings
+    # Convert production countries back to lists if they were read as strings
+    # (lists appear as strings in the CSV when they contain commas)
     df_enriched["Production Countries"] = df_enriched["Production Countries"].apply(
         lambda x: ast.literal_eval(x) if isinstance(x, str) and x else []
     )
@@ -136,18 +146,36 @@ if not_found:
     for title in not_found:
         print(f" - {title}")
 
-
 # =========================
 # GENERATE FILTERED VIEW
 # =========================
 
-df_filtered = df_enriched[
-    ~df_enriched["Production Countries"].apply(
-        lambda c: isinstance(c, list) and "United States of America" in c
-    )
-]
+if EXCLUDE_COUNTRY:
+    # Remove all films containing FILTER_COUNTRY
+    df_filtered = df_enriched[
+        ~df_enriched["Production Countries"].apply(
+            lambda c: isinstance(c, list) and FILTER_COUNTRY in c
+        )
+    ]
+else:
+    # Keep films with FILTER_COUNTRY
+    if ONLY_THIS_COUNTRY:
+        df_filtered = df_enriched[
+            df_enriched["Production Countries"].apply(
+                lambda c: isinstance(c, list) and c == [FILTER_COUNTRY]
+            )
+        ]
+    else:
+        df_filtered = df_enriched[
+            df_enriched["Production Countries"].apply(
+                lambda c: isinstance(c, list) and FILTER_COUNTRY in c
+            )
+        ]
 
 df_filtered.to_csv(OUTPUT_CSV, index=False)
 
-print(f"Filtered CSV generated: {OUTPUT_CSV}")
+print(f"\nFiltered CSV generated: {OUTPUT_CSV}")
 print(f"Films kept: {len(df_filtered)} / {len(df_enriched)}")
+print(f"Country filter applied: {FILTER_COUNTRY}")
+print(f"Exclude country? {EXCLUDE_COUNTRY}")
+print(f"Only this country? {ONLY_THIS_COUNTRY}")
