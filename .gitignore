@@ -6,3 +6,5 @@ __pycache__/
 watchlist_enriched.csv
 watchlist_filtered.csv
 watchlist.csv
+
+service_account.json

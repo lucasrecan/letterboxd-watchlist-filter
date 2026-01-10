@@ -1,82 +1,135 @@
 # watchlist_filter.py
+
 import pandas as pd
 import requests
 import time
-from pathlib import Path
 import ast
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 import api_key
 
+# =========================
+# CONFIGURATION
+# =========================
+
 TMDB_API_KEY = api_key.api_key
+
 TMDB_SEARCH_URL = "https://api.themoviedb.org/3/search/movie"
 TMDB_MOVIE_URL = "https://api.themoviedb.org/3/movie/{}"
-SLEEP_SECONDS = 0.05  # Small sleep to avoid bursts
+SLEEP_SECONDS = 0.05
+
+# =========================
+# GOOGLE SHEETS CONFIG
+# =========================
+
+SERVICE_ACCOUNT_FILE = "service_account.json"
+SHEET_NAME = "Watchlist Enriched"
+
+scope = [
+    "https://spreadsheets.google.com/feeds",
+    "https://www.googleapis.com/auth/drive",
+]
+
+creds = ServiceAccountCredentials.from_json_keyfile_name(
+    SERVICE_ACCOUNT_FILE, scope
+)
+client = gspread.authorize(creds)
+sheet = client.open(SHEET_NAME).sheet1
+
+
+# =========================
+# TMDB QUERY FUNCTION
+# =========================
 
 def get_production_countries(title, year):
-    """
-    Query TMDB for a given movie title and year.
-    Returns a list of production countries, empty if not found.
-    """
-    search_params = {
+    params = {
         "api_key": TMDB_API_KEY,
         "query": title,
-        "year": int(year) if not pd.isna(year) else None
+        "year": int(year) if not pd.isna(year) else None,
     }
 
-    search_resp = requests.get(TMDB_SEARCH_URL, params=search_params, timeout=10)
-    search_resp.raise_for_status()
-    search_data = search_resp.json()
+    resp = requests.get(TMDB_SEARCH_URL, params=params, timeout=10)
+    resp.raise_for_status()
+    results = resp.json().get("results")
 
-    if not search_data["results"]:
+    if not results:
         return []
 
-    movie_id = search_data["results"][0]["id"]
+    movie_id = results[0]["id"]
 
     details_resp = requests.get(
         TMDB_MOVIE_URL.format(movie_id),
         params={"api_key": TMDB_API_KEY},
-        timeout=10
+        timeout=10,
     )
     details_resp.raise_for_status()
-    details_data = details_resp.json()
 
+    details_data = details_resp.json()
     return [c["name"] for c in details_data.get("production_countries", [])]
 
+
+# =========================
+# MAIN FILTER FUNCTION
+# =========================
 
 def filter_watchlist(
     df_input: pd.DataFrame,
     filter_country: str = "United States of America",
     exclude_country: bool = True,
     only_this_country: bool = False,
-    enriched_csv_path: str = "watchlist_enriched.csv"
 ):
-    """
-    Enrich a watchlist DataFrame via TMDB and filter by country.
-    
-    Returns:
-        df_filtered: filtered DataFrame
-        not_found: list of titles not found on TMDB
-    """
+
+    # ---- Input normalization ----
     df_input = df_input.copy()
-    df_input["Year"] = df_input["Year"].astype("Int64")
+    df_input["Year"] = pd.to_numeric(
+        df_input["Year"], errors="coerce"
+    ).astype("Int64")
 
-    # Load enriched CSV if exists
-    if Path(enriched_csv_path).exists():
-        df_enriched = pd.read_csv(enriched_csv_path)
-        df_enriched["Year"] = df_enriched["Year"].astype("Int64")
-        df_enriched["Production Countries"] = df_enriched["Production Countries"].apply(
-            lambda x: ast.literal_eval(x) if isinstance(x, str) and x else []
+    # ---- Always initialize ----
+    df_enriched = pd.DataFrame(
+        columns=["Name", "Year", "Production Countries"]
+    )
+    processed_keys = set()
+
+    # =========================
+    # LOAD ENRICHED DATA
+    # =========================
+
+    records = sheet.get_all_records()
+
+    if records:
+        df_enriched = pd.DataFrame(records)
+
+        df_enriched["Year"] = pd.to_numeric(
+            df_enriched["Year"], errors="coerce"
+        ).astype("Int64")
+
+        df_enriched["Production Countries"] = df_enriched[
+            "Production Countries"
+        ].apply(
+            lambda x: ast.literal_eval(x)
+            if isinstance(x, str) and x.strip().startswith("[")
+            else []
         )
-        processed_keys = set(zip(df_enriched["Name"], df_enriched["Year"]))
-    else:
-        df_enriched = pd.DataFrame()
-        processed_keys = set()
 
-    # Detect new films to process
+        processed_keys = set(zip(df_enriched["Name"], df_enriched["Year"]))
+
+    # =========================
+    # DETECT NEW FILMS
+    # =========================
+
     df_to_process = df_input[
-        ~df_input.apply(lambda r: (r["Name"], r["Year"]) in processed_keys, axis=1)
+        ~df_input.apply(
+            lambda r: (r["Name"], r["Year"]) in processed_keys,
+            axis=1,
+        )
     ]
 
     not_found = []
+
+    # =========================
+    # ENRICH NEW FILMS
+    # =========================
 
     if not df_to_process.empty:
         production_countries = []
@@ -89,27 +142,58 @@ def filter_watchlist(
             except Exception:
                 countries = []
                 not_found.append(f"{row['Name']} ({row['Year']})")
+
             production_countries.append(countries)
             time.sleep(SLEEP_SECONDS)
 
+        df_to_process = df_to_process.copy()
         df_to_process["Production Countries"] = production_countries
-        df_enriched = pd.concat([df_enriched, df_to_process], ignore_index=True)
 
-        # Save enriched CSV for incremental updates
-        df_enriched.to_csv(enriched_csv_path, index=False)
+        df_enriched = pd.concat(
+            [df_enriched, df_to_process], ignore_index=True
+        )
 
-    # Filtering
+        # =========================
+        # SAVE BACK TO GOOGLE SHEET
+        # =========================
+
+        df_save = df_enriched.copy()
+        
+        # Avoid duplicates
+        df_save = df_save.drop_duplicates(subset=["Name", "Year"], keep="first")
+        # Production Countries -> string
+        df_save["Production Countries"] = df_save["Production Countries"].apply(str)
+
+        # Year -> string, NA -> empty
+        df_save["Year"] = df_save["Year"].astype("string").fillna("")
+
+        # Name -> string, NA -> empty (sécurité)
+        df_save["Name"] = df_save["Name"].astype("string").fillna("")
+
+        sheet.clear()
+        sheet.update(
+            [df_save.columns.tolist()]
+            + df_save.values.tolist()
+        )
+
+    # =========================
+    # FILTERING
+    # =========================
+
     def country_filter(countries):
         if not isinstance(countries, list):
             return False
+
+        if only_this_country:
+            return len(countries) == 1 and countries[0] == filter_country
+
         if exclude_country:
             return filter_country not in countries
-        else:
-            if only_this_country:
-                return len(countries) == 1 and countries[0].strip() == filter_country
-            else:
-                return filter_country in countries
 
-    df_filtered = df_enriched[df_enriched["Production Countries"].apply(country_filter)]
+        return filter_country in countries
+
+    df_filtered = df_enriched[
+        df_enriched["Production Countries"].apply(country_filter)
+    ]
 
     return df_filtered, not_found
