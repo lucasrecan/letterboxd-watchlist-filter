@@ -181,7 +181,12 @@ def filter_watchlist(
     # =========================
     # APPLY FILTERS
     # =========================
-    df_filtered = df_enriched.copy()
+    df_filtered = pd.merge(
+        df_input[["Name", "Year"]], 
+        df_enriched, 
+        on=["Name", "Year"], 
+        how="inner"
+    )
 
     if filters:
         for key, val in filters.items():
