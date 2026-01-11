@@ -1,8 +1,8 @@
 # Letterboxd Watchlist Filter - Web App
 
-This web app allows you to filter your Letterboxd watchlist based on the production country of each film using data from TMDB (The Movie Database).  
+This web app allows you to filter your Letterboxd watchlist with advanced criteria (Country, Director, Language, etc.) using data from TMDB (The Movie Database).
 
-It also keeps an **enriched cache** of films already processed in a Google Sheets spreadsheet, reducing repeated API queries and enabling incremental updates.
+It maintains an enriched persistent cache in Google Sheets, allowing for incremental updates and reducing API calls.
 
 ## Features
 
@@ -23,19 +23,18 @@ It also keeps an **enriched cache** of films already processed in a Google Sheet
 ## How to Use
 
 1. Go to the web app: [https://lb-watchlist-filter.streamlit.app/](https://lb-watchlist-filter.streamlit.app/)
-2. Upload your Letterboxd watchlist CSV.
-3. Select the filter options for country.
-4. Click **Generate CSV**.
-5. Download the filtered CSV to create a new list on Letterboxd.
+2. Export your watchlist from Letterboxd (watchlist -> Export watchlist on the right or got to https://letterboxd.com/your-username/watchlist/export/)
+3. Upload your Letterboxd watchlist CSV.
+4. Select the filter options.
+5. Click **Generate CSV**.
+6. Download the CSV file when it's ready.
+6. When creating or editing a list on Letterboxd, choose import and select the downloaded file.
 
 ## To Do / Future Improvements
 
-- **Better error handling**: show user-friendly messages
-- **Additional filters**: e.g., by genre, release year, director, or rating.
-- **Progress indication**: show a loading bar or spinner during processing.
-- **Duplicate handling**: prevent duplicate entries in the Google Sheet and filtered CSV.
 - **User guidance**: add instructions in the app on where to get the CSV from Letterboxd and the required column names.
 - **Brief explanation in-app**: add a small section in the web app to explain how the filtering works.
+
 ## Credits
 
 Created by **Ribou**  

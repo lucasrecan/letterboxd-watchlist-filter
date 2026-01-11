@@ -174,7 +174,7 @@ if df_input is not None:
     
     col_btn, _, _ = st.columns([1, 2, 2])
     with col_btn:
-        run_filter = st.button("Run Filter", type="primary", width='stretch')
+        run_filter = st.button("Generate CSV", type="primary", width='stretch')
 
     if run_filter:
         progress_bar = st.progress(0)
@@ -216,6 +216,25 @@ if df_input is not None:
 elif not uploaded_file:
     st.info("Please upload a CSV file to begin.")
 
+
+with st.expander("How does this app work?"):
+    st.markdown("""
+    **1. Upload your Letterboxd watchlist** Export your watchlist from Letterboxd as a CSV file and upload it here. 
+    The app requires at least the **Name** and **Year** columns to identify films.
+
+    **2. High-Speed Enrichment & Caching** The app checks our **Google Sheets cache** first. If a film is missing, it fetches metadata (Country, Director, Language, Runtime, Cast) from **TMDB**. 
+    New data is automatically saved to the cache to make future runs instant.
+
+    **3. Advanced Filtering** You can now filter your list using multiple criteria:
+    * **Country**: Include or exclude specific countries.
+    * **Director**: Keep or remove films from specific filmmakers.
+    * **Language**: Filter by original version language.
+    * **Year**: Define a specific release period.
+    * And more.
+
+    **4. Export & Sync** Download the final filtered CSV, which is ready to be imported back into a Letterboxd list. 
+    *Note: A maintenance script runs periodically to ensure the cache remains clean and duplicate-free.*
+    """)
 
 st.markdown("---")
 st.markdown(
