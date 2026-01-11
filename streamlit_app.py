@@ -4,8 +4,8 @@ from watchlist_filter import filter_watchlist
 
 # Page Configuration
 st.set_page_config(
-    page_title="Letterboxd Filter",
-    layout="wide"
+    page_title="Letterboxd Filter"#,
+    #layout="wide"
 )
 
 st.title("Letterboxd Watchlist Filter")
@@ -97,7 +97,7 @@ if df_input is not None:
         # Country
         if st.checkbox("Filter by Production Country"):
             c_mode = st.radio("Country Mode", ["Include", "Exclude"], horizontal=True)
-            c_text = st.text_input("Countries (e.g., USA, France)", help="Separate by commas")
+            c_text = st.text_input("Countries (e.g., United States of America, France)", help="Separate by commas")
             c_list = [c.strip() for c in c_text.split(",") if c.strip()]
             
             c_only = False
@@ -138,6 +138,7 @@ if df_input is not None:
 
         # Director
         if st.checkbox("Filter by Director"):
+            st.caption("e.g., Alfonso Cuarón, Nick Park")
             d_inc, d_exc, d_only = people_filter_ui("Director", "dir")
             if d_inc: filters["director_include"] = {"values": d_inc, "only": d_only}
             if d_exc: filters["director_exclude"] = {"values": d_exc, "only": False}
@@ -146,6 +147,7 @@ if df_input is not None:
 
         # Cast
         if st.checkbox("Filter by Cast"):
+            st.caption("e.g., Ralph Fiennes, Tilda Swinton")
             a_inc, a_exc, a_only = people_filter_ui("Actor/Actress", "act")
             if a_inc: filters["cast_include"] = {"values": a_inc, "only": a_only}
             if a_exc: filters["cast_exclude"] = {"values": a_exc, "only": False}
