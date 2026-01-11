@@ -215,3 +215,14 @@ if df_input is not None:
 
 elif not uploaded_file:
     st.info("Please upload a CSV file to begin.")
+
+
+st.markdown("---")
+st.markdown(
+    "Created by Ribou. "
+    "Github: [lucasrecan](https://github.com/lucasrecan). "
+    "Letterboxd: [Ribou_](https://letterboxd.com/ribou_/)."
+)
+st.markdown(
+    "[Source code](https://github.com/lucasrecan/letterboxd-watchlist-filter/tree/webapp)"
+)
