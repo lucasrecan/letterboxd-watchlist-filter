@@ -192,18 +192,19 @@ if run_filter and df_input is not None:
         st.success(f"Processing Complete. {len(df_filtered)} movies remaining.")
         
         # Download & Preview
-        c_res1, c_res2 = st.columns([1, 1])
+        c_res1, c_res2 = st.columns([1, 2])
         with c_res1:
             st.download_button(
                 "Download Filtered CSV",
                 df_filtered.to_csv(index=False).encode("utf-8"),
                 file_name="watchlist_filtered.csv",
                 mime="text/csv",
-                type="primary"
+                type="primary",
+                width='stretch'
             )
         with c_res2:
             with st.expander("View Filtered List"):
-                st.dataframe(df_filtered)
+                st.dataframe(df_filtered, width='stretch')
 
         if not_found:
             st.warning(f"{len(not_found)} movies could not be identified on TMDB.")
