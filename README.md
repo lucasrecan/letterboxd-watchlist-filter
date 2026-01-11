@@ -4,22 +4,6 @@ This web app allows you to filter your Letterboxd watchlist with advanced criter
 
 It maintains an enriched persistent cache in Google Sheets, allowing for incremental updates and reducing API calls.
 
-## Features
-
-- Upload your Letterboxd watchlist CSV (must include columns `Name` and `Year`).
-- Choose a country filter:
-  - **Exclude films from this country**  
-  - **Include only films from this country**
-- Optionally, when including films from a country, you can choose to keep **only films produced exclusively** in that country.
-- Generates a filtered CSV you can download and import into Letterboxd.
-- Automatically updates a Google Sheet (`Watchlist Enriched`) with the production countries of newly processed films, so the next run will be faster.
-
-## Limitations
-
-- Some films or mini-series may **not be found on TMDB**; these will need manual checking.
-- Occasionally, films may appear **in duplicate** in the Google Sheet or in the filtered CSV.
-- TMDB data may be **inaccurate**, for example some films may be incorrectly marked as produced only in a certain country.
-
 ## How to Use
 
 1. Go to the web app: [https://lb-watchlist-filter.streamlit.app/](https://lb-watchlist-filter.streamlit.app/)
@@ -30,10 +14,11 @@ It maintains an enriched persistent cache in Google Sheets, allowing for increme
 6. Download the CSV file when it's ready.
 6. When creating or editing a list on Letterboxd, choose import and select the downloaded file.
 
-## To Do / Future Improvements
+## Limitations
 
-- **User guidance**: add instructions in the app on where to get the CSV from Letterboxd and the required column names.
-- **Brief explanation in-app**: add a small section in the web app to explain how the filtering works.
+- Some films or mini-series may **not be found on TMDB**; these will need manual checking.
+- Occasionally, films may appear **in duplicate** in the Google Sheet or in the filtered CSV.
+- TMDB data may be **inaccurate**, for example some films may be incorrectly marked as produced only in a certain country.
 
 ## Credits
 
