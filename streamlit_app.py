@@ -32,7 +32,7 @@ if uploaded_file:
         else:
             st.info(f"File loaded. {len(df_input)} movies found.")
             with st.expander("Preview Data"):
-                st.dataframe(df_input.head(3), use_container_width=True)
+                st.dataframe(df_input.head(3), width='stretch')
                 
     except Exception as e:
         st.error(f"Error reading the file: {e}")
@@ -172,7 +172,7 @@ if df_input is not None:
     
     col_btn, _, _ = st.columns([1, 2, 2])
     with col_btn:
-        run_filter = st.button("Run Filter", type="primary", use_container_width=True)
+        run_filter = st.button("Run Filter", type="primary", width='stretch')
 
     if run_filter:
         progress_bar = st.progress(0)
