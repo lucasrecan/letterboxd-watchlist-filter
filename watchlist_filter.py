@@ -4,13 +4,13 @@ import time
 import ast
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-import api_key
-
+import streamlit as st
+import json
 # =========================
 # CONFIGURATION
 # =========================
 
-TMDB_API_KEY = api_key.api_key
+TMDB_API_KEY = st.secrets["TMDB_API_KEY"]
 TMDB_SEARCH_URL = "https://api.themoviedb.org/3/search/movie"
 TMDB_MOVIE_URL = "https://api.themoviedb.org/3/movie/{}"
 SLEEP_SECONDS = 0.0
@@ -22,7 +22,7 @@ http_session = requests.Session()
 # GOOGLE SHEETS CONFIG
 # =========================
 
-SERVICE_ACCOUNT_FILE = "service_account.json"
+SERVICE_ACCOUNT_JSON = json.loads(st.secrets["SERVICE_ACCOUNT_JSON"])
 SHEET_NAME = "Watchlist Enriched"
 
 scope = [
@@ -30,7 +30,7 @@ scope = [
     "https://www.googleapis.com/auth/drive",
 ]
 
-creds = ServiceAccountCredentials.from_json_keyfile_name(SERVICE_ACCOUNT_FILE, scope)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(SERVICE_ACCOUNT_JSON, scope)
 client = gspread.authorize(creds)
 sheet = client.open(SHEET_NAME).sheet1
 
