@@ -4,7 +4,7 @@ from watchlist_filter import filter_watchlist
 
 # Page Configuration
 st.set_page_config(
-    page_title="Letterboxd Filter"#,
+    page_title="Letterboxd Watchlist Filter"#,
     #layout="wide"
 )
 
