@@ -46,6 +46,25 @@ if uploaded_file is not None and st.button("Generate CSV"):
         for title in not_found:
             st.write(f" - {title}")
 
+
+with st.expander("How does this app work?"):
+    st.markdown("""
+    **1. Upload your Letterboxd watchlist**  
+    Export your watchlist from Letterboxd as a CSV file.
+    It must contain the columns **Name** and **Year**.
+
+    **2. Automatic enrichment**  
+    The app fetches production countries for each film using TMDB.
+    Enriched data is stored in a Google Spreadsheet as a cache.
+
+    **3. Filtering**  
+    Choose whether to exclude a country or keep only films produced in it.
+    An additional option allows keeping only films produced exclusively in that country.
+
+    **4. Export**  
+    Download the filtered CSV and import it back into a Letterboxd list.
+    """)
+
 st.markdown("---")
 st.markdown(
     "Created by Ribou. "
@@ -53,5 +72,5 @@ st.markdown(
     "Letterboxd: [Ribou_](https://letterboxd.com/ribou_/)."
 )
 st.markdown(
-    "[Source code](https://github.com/lucasrecan/letterboxd-watchlist-filter)."
+    "[Source code](https://github.com/lucasrecan/letterboxd-watchlist-filter/tree/webapp)"
 )
