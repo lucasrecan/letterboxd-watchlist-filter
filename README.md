@@ -1,29 +1,48 @@
-For the moment, this script filters a `watchlist.csv` to create a `watchlist_filtered.csv` according to the production country of each film according to TMDB.
+# Letterboxd Watchlist Filter - Web App
 
-It also creates a `watchlist_enriched.csv` to keep track of films already found on TMDB, allowing updates.
+This web app allows you to filter your Letterboxd watchlist based on the production country of each film using data from TMDB (The Movie Database).  
 
-You can configure the country filter in `main.py` using three variables:
+It also keeps an **enriched cache** of films already processed in a Google Sheets spreadsheet, reducing repeated API queries and enabling incremental updates.
 
-- `FILTER_COUNTRY`: the country to filter (e.g. "United States of America", "France")
-- `EXCLUDE_COUNTRY`: 
-    - True -> remove all films containing `FILTER_COUNTRY`
-    - False -> keep only films containing `FILTER_COUNTRY`
-- `ONLY_THIS_COUNTRY`: 
-    - True -> keep only films produced exclusively in `FILTER_COUNTRY`
-    - False -> keep films where `FILTER_COUNTRY` is one of the production countries
-    
-    (used only if `EXCLUDE_COUNTRY` is False)
+## Features
 
-To execute: 
+- Upload your Letterboxd watchlist CSV (must include columns `Name` and `Year`).
+- Choose a country filter:
+  - **Exclude films from this country**  
+  - **Include only films from this country**
+- Optionally, when including films from a country, you can choose to keep **only films produced exclusively** in that country.
+- Generates a filtered CSV you can download and import into Letterboxd.
+- Automatically updates a Google Sheet (`Watchlist Enriched`) with the production countries of newly processed films, so the next run will be faster.
 
-1. you need Python
-2. add your TMDB API key in `api_key.py`
-3. export your Letterboxd watchlist and put it in the same directory (it must include columns `Name` and `Year`)
-4. run `main.py`
+## Limitations
 
-After execution, you can create a new list on Letterboxd and import `watchlist_filtered.csv`.
+- Some films or mini-series may **not be found on TMDB**; these will need manual checking.
+- Occasionally, films may appear **in duplicate** in the Google Sheet or in the filtered CSV.
+- TMDB data may be **inaccurate**, for example some films may be incorrectly marked as produced only in a certain country.
 
-Notes:
+## How to Use
 
-- Check the console after the script runs for any items that were not found on TMDB, which need to be checked manually (mini-series for example).
-- Can be wrong sometimes (for example, Beef (2023) and The Hunt (2012) are incorrectly considered as produced only in France).
+1. Go to the web app: [https://lb-watchlist-filter.streamlit.app/](https://lb-watchlist-filter.streamlit.app/)
+2. Upload your Letterboxd watchlist CSV.
+3. Select the filter options for country.
+4. Click **Generate CSV**.
+5. Download the filtered CSV to create a new list on Letterboxd.
+
+## To Do / Future Improvements
+
+- **Better error handling**: show user-friendly messages
+- **Additional filters**: e.g., by genre, release year, director, or rating.
+- **Progress indication**: show a loading bar or spinner during processing.
+- **Duplicate handling**: prevent duplicate entries in the Google Sheet and filtered CSV.
+- **User guidance**: add instructions in the app on where to get the CSV from Letterboxd and the required column names.
+
+## Credits
+
+Created by **Ribou**  
+- GitHub: [lucasrecan](https://github.com/lucasrecan)  
+- Letterboxd: [Ribou_](https://letterboxd.com/ribou_/)  
+
+The project uses:  
+- [TMDB API](https://www.themoviedb.org/documentation/api) for film metadata  
+- [Streamlit](https://streamlit.io/) for the web interface  
+- [Google Sheets API](https://developers.google.com/sheets/api) for persistent caching
