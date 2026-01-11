@@ -35,7 +35,7 @@ It also keeps an **enriched cache** of films already processed in a Google Sheet
 - **Progress indication**: show a loading bar or spinner during processing.
 - **Duplicate handling**: prevent duplicate entries in the Google Sheet and filtered CSV.
 - **User guidance**: add instructions in the app on where to get the CSV from Letterboxd and the required column names.
-
+- **Brief explanation in-app**: add a small section in the web app to explain how the filtering works.
 ## Credits
 
 Created by **Ribou**  
