@@ -53,5 +53,5 @@ st.markdown(
     "Letterboxd: [Ribou_](https://letterboxd.com/ribou_/)."
 )
 st.markdown(
-    "[Source code](https://github.com/lucasrecan/letterboxd-watchlist-filter)."
+    "[Source code](https://github.com/lucasrecan/letterboxd-watchlist-filter/tree/webapp)."
 )
