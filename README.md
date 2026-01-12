@@ -1,4 +1,4 @@
-See the webapp branch for the https://lb-watchlist-filter.streamlit.app source code
+See the [webapp branch](https://github.com/lucasrecan/letterboxd-watchlist-filter/tree/webapp) for the https://lb-watchlist-filter.streamlit.app source code
 
 ---
 
