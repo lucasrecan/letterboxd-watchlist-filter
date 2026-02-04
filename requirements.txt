@@ -3,3 +3,4 @@ requests
 gspread
 oauth2client
 streamlit
+altair==4.2.2
