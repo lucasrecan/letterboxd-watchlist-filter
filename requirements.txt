@@ -1,0 +1,8 @@
+streamlit>=1.32
+altair>=5
+pandas
+requests
+gspread
+oauth2client
+google-auth
+google-auth-oauthlib
