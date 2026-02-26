@@ -7,7 +7,7 @@ It maintains an enriched persistent cache in Google Sheets, allowing for increme
 ## How to Use
 
 1. Go to the web app: [https://lb-watchlist-filter.streamlit.app/](https://lb-watchlist-filter.streamlit.app/)
-2. Export your watchlist from Letterboxd (watchlist -> Export watchlist on the right or got to https://letterboxd.com/your-username/watchlist/export/)
+2. Export your watchlist from Letterboxd (watchlist -> Export watchlist on the right or go to https://letterboxd.com/your-username/watchlist/export/)
 3. Upload your Letterboxd watchlist CSV.
 4. Select the filter options.
 5. Click **Generate CSV**.
