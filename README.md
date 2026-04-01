@@ -1,13 +1,13 @@
 # Letterboxd Watchlist Filter - Web App
 
-This web app allows you to filter your Letterboxd watchlist with advanced criteria (Country, Director, Language, etc.) using data from TMDB (The Movie Database).
+This web app allows you to filter your Letterboxd watchlist with advanced criteria (Country, Director, Language, etc.) using TMDB data, generating a new filtered CSV ready to be imported back into a Letterboxd list.
 
 It maintains an enriched persistent cache in Google Sheets, allowing for incremental updates and reducing API calls.
 
 ## How to Use
 
 1. Go to the web app: [https://lb-watchlist-filter.streamlit.app/](https://lb-watchlist-filter.streamlit.app/)
-2. Export your watchlist from Letterboxd (watchlist -> Export watchlist on the right or got to https://letterboxd.com/your-username/watchlist/export/)
+2. Export your watchlist from Letterboxd (watchlist -> Export watchlist on the right or go to https://letterboxd.com/your-username/watchlist/export/)
 3. Upload your Letterboxd watchlist CSV.
 4. Select the filter options.
 5. Click **Generate CSV**.
